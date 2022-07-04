@@ -81,7 +81,7 @@ class MyAppBar extends StatelessWidget {
             ),
             iconSize: 30,
             onPressed: () {
-              debugPrint("Ouvrir les paramètres...");
+              debugPrint("Ouvrir les paramètres");
             },
           ),
         ),
