@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:telecabine/main.dart';
-import 'package:telecabine/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -112,10 +111,9 @@ class _SettingsPageState extends State<SettingsPage> {
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.of(ctx).pop();
-                Navigator.of(context).push(SettingsPage.route());
               },
               style: ElevatedButton.styleFrom(
-                primary: Colors.green,
+                primary: Colors.red,
                 onPrimary: Colors.white,
                 shadowColor: Colors.transparent,
                 padding: const EdgeInsets.only(
@@ -124,7 +122,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     borderRadius: BorderRadius.circular(8)),
               ),
               label: const Text(
-                "Paramètres",
+                "Fermer",
                 style: TextStyle(
                   fontFamily: "Montserrat",
                   fontWeight: FontWeight.w600,
@@ -270,7 +268,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     color: Colors.black54,
                   ),
                   iconSize: 30,
-                  onPressed: () => Navigator.of(context).push(HomePage.route()),
+                  onPressed: () => Navigator.pop(context),
                 ),
               ),
             ],

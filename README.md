@@ -1,4 +1,4 @@
-# telecabine
+# Télécabine
 
 An app to control a lego detachable gondola.
 

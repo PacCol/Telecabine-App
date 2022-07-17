@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:telecabine/main.dart';
@@ -12,14 +10,6 @@ bool _networkErrorShown = false;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
-
-  static Route<dynamic> route() {
-    return CupertinoPageRoute(
-      builder: (BuildContext context) {
-        return const HomePage();
-      },
-    );
-  }
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -47,24 +37,30 @@ class _HomePageState extends State<HomePage> {
     request.headers["Cache-Control"] = "no-cache";
     request.headers["Accept"] = "text/event-stream";
 
-    Future<http.StreamedResponse> response = _client.send(request);
+    void Wesh() {
+      debugPrint("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
+    }
+
+    Future<http.StreamedResponse> response = _client.send(request).catchError(Wesh);
 
     response.asStream().listen((streamedResponse) {
-      streamedResponse.stream.listen((data) {
-        _currentSpeed = double.parse(utf8.decode(data).split(",")[0].split("=")[1]);
-        if (utf8.decode(data).split(",")[1].split("=")[1] == "enabled") {
-          _lightsEnabled = true;
-        } else {
-          _lightsEnabled = false;
-        }
-        showStatus();
-      });
+        streamedResponse.stream.listen((data) {
+          _currentSpeed =
+              double.parse(utf8.decode(data).split(",")[0].split("=")[1]);
+          if (utf8.decode(data).split(",")[1].split("=")[1] == "enabled") {
+            _lightsEnabled = true;
+          } else if (utf8.decode(data).split(",")[1].split("=")[1] == "disabled") {
+            _lightsEnabled = false;
+          }
+          debugPrint("============================================================ " + utf8.decode(data));
+          showStatus();
+        });
     });
   }
 
   Future<void> pingServer() async {
     try {
-      http.Response response = await http.post(
+      await http.post(
         Uri.parse('http://$serverUri/api/status'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -179,8 +175,10 @@ class _HomePageState extends State<HomePage> {
               ElevatedButton.icon(
                 onPressed: () {
                   _networkErrorShown = false;
-                  SystemNavigator.pop();
-                  exit(0);
+                  // to remove
+                  Navigator.of(context).pop();
+                  //SystemNavigator.pop();
+                  //exit(0);
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Colors.red,
@@ -207,7 +205,10 @@ class _HomePageState extends State<HomePage> {
               ElevatedButton.icon(
                 onPressed: () {
                   Navigator.of(ctx).pop();
-                  Navigator.of(context).push(SettingsPage.route());
+                  Navigator.of(context).push(SettingsPage.route()).then((value) {
+                    startSse();
+                    pingServer();
+                  });
                   _networkErrorShown = false;
                 },
                 style: ElevatedButton.styleFrom(
@@ -324,7 +325,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                   iconSize: 30,
                   onPressed: () =>
-                      Navigator.of(context).push(SettingsPage.route()),
+                      Navigator.of(context).push(SettingsPage.route()).then((value) {
+                        startSse();
+                        pingServer();
+                      }),
                 ),
               ),
             ],
